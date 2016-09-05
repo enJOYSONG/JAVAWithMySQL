@@ -1,55 +1,169 @@
-import javax.imageio.ImageIO;
-import javax.swing.JDialog;
-import javax.swing.JTable;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyEditor;
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.BoxLayout;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-
 import java.awt.GridLayout;
-
-import javax.swing.JButton;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-
-import com.mysql.jdbc.ResultSetMetaData;
-
-import java.awt.Canvas;
-import java.awt.ComponentOrientation;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
+import javax.imageio.ImageIO;
+import javax.swing.DefaultCellEditor;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
-import java.awt.Label;
-import java.awt.Panel;
+import java.awt.DisplayMode;
+
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
+
+import javax.swing.JTextPane;
+
+
+class Cube implements GLEventListener {
+
+	public static DisplayMode dm, dm_old;
+	private GLU glu = new GLU();
+	private float rquad = 0.0f;
+	private float xrot,yrot,zrot;
+	public int texture;
+	public File im;
+
+	public Cube() {
+		super();
+		im = new File("C:\\Users\\SVF\\Pictures\\5.jpg");
+	}
+	public Cube(File im_) {
+		im = im_;
+	}
+	@Override
+	public void display( GLAutoDrawable drawable ) {
+
+		// TODO Auto-generated method stub
+		final GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glLoadIdentity(); // Reset The View
+		gl.glTranslatef(0f, 0f, -5.0f);
+
+		gl.glRotatef(xrot, 1.0f, 1.0f, 1.0f);
+		gl.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
+		gl.glRotatef(zrot, 0.0f, 0.0f, 1.0f);
+
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+		gl.glBegin(GL2.GL_QUADS);
+
+		// Front Face
+		gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-1.0f, -1.0f, 1.0f);
+		gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 1.0f, -1.0f, 1.0f);
+		gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 1.0f, 1.0f, 1.0f);
+		gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-1.0f, 1.0f, 1.0f);
+
+		// Back Face
+		gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+		gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+		gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 1.0f, 1.0f, -1.0f);
+		gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 1.0f, -1.0f, -1.0f);
+
+		// Top Face
+		gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+		gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-1.0f, 1.0f, 1.0f);
+		gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 1.0f, 1.0f, 1.0f);
+		gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 1.0f, 1.0f, -1.0f);
+
+		// Bottom Face
+		gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+		gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 1.0f, -1.0f, -1.0f);
+		gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 1.0f, -1.0f, 1.0f);
+		gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-1.0f, -1.0f, 1.0f);
+
+		// Right face
+		gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 1.0f, -1.0f, -1.0f);
+		gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 1.0f, 1.0f, -1.0f);
+		gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 1.0f, 1.0f, 1.0f);
+		gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 1.0f, -1.0f, 1.0f);
+
+		// Left Face
+		gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+		gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-1.0f, -1.0f, 1.0f);
+		gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-1.0f, 1.0f, 1.0f);
+		gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+		gl.glEnd();
+		gl.glFlush();
+
+		//change the speeds here
+		xrot += .5f;
+		yrot += .5f;
+		zrot += .5f;
+	}
+
+	@Override
+	public void dispose( GLAutoDrawable drawable ) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void init( GLAutoDrawable drawable ) {
+
+		final GL2 gl = drawable.getGL().getGL2();
+		gl.glShadeModel( GL2.GL_SMOOTH );
+		gl.glClearColor( 0f, 0f, 0f, 0f );
+		gl.glClearDepth( 1.0f );
+		gl.glEnable( GL2.GL_DEPTH_TEST );
+		gl.glDepthFunc( GL2.GL_LEQUAL );
+		gl.glHint( GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST );
+
+		gl.glEnable(GL2.GL_TEXTURE_2D);
+		try{
+			Texture t = TextureIO.newTexture(im, true);
+			texture= t.getTextureObject(gl);
+
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height ) {
+
+		// TODO Auto-generated method stub
+		final GL2 gl = drawable.getGL().getGL2();
+		if( height == 0 )
+			height = 1;
+
+		final float h = ( float ) width / ( float ) height;
+		gl.glViewport( 0, 0, width, height );
+		gl.glMatrixMode( GL2.GL_PROJECTION );
+		gl.glLoadIdentity();
+
+		glu.gluPerspective( 45.0f, h, 1.0, 20.0 );
+		gl.glMatrixMode( GL2.GL_MODELVIEW );
+		gl.glLoadIdentity();
+	}
+
+}
 
 public class MySQLwithJAVA extends JDialog{
 	private String[] columnNameWeapon = {"WEAPON NAME"};
@@ -83,7 +197,7 @@ public class MySQLwithJAVA extends JDialog{
 	private JTable table_sound_path_;
 	private JTable table_model_2dpath_;
 	private JTable table_model_3dpath_;
-	
+
 	DefaultTableModel defaultTableModelWeapon;
 	DefaultTableModel defaultTableModelBullet;
 	DefaultTableModel defaultTableModelBulletSize;
@@ -94,11 +208,13 @@ public class MySQLwithJAVA extends JDialog{
 	DefaultTableModel defaultTableModel_Model;
 	DefaultTableModel defaultTableModel_Model2Dpath;
 	DefaultTableModel defaultTableModel_Model3Dpath;
-	
+
 	JLabel picLabel;
+	final GLCanvas glcanvas;
+	Cube cube;
 	Connection con = null;
 	java.sql.Statement st = null;
-	
+
 	public static void main(String[] args) {
 		try {
 			MySQLwithJAVA dialog = new MySQLwithJAVA();
@@ -197,7 +313,7 @@ public class MySQLwithJAVA extends JDialog{
 		RBX_Sound sound_;
 		RBX_Model model_;
 	};
-	
+
 	public void ResetCombobox() {
 		TableColumn weaponColumn = table_weapon_.getColumnModel().getColumn(0);
 		JComboBox comboBox = new JComboBox();
@@ -240,15 +356,14 @@ public class MySQLwithJAVA extends JDialog{
 						defaultTableModel_Model2Dpath.addRow(model2d);
 						Object[] model3d = new Object[]{weapon_list_.get(i).model_.model_path_3d_};
 						defaultTableModel_Model3Dpath.addRow(model3d);
-						
-						BufferedImage myPicture;
-						try {
-							myPicture = ImageIO.read(new File(weapon_list_.get(i).model_.model_path_2d_));
-							picLabel.setIcon(new ImageIcon(myPicture));
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+
+						File im = new File(weapon_list_.get(i).model_.model_path_2d_);
+						ImageIcon imageIcon = new ImageIcon(new ImageIcon(weapon_list_.get(i).model_.model_path_2d_).getImage().getScaledInstance(picLabel.getWidth(), picLabel.getHeight(), Image.SCALE_DEFAULT));
+						picLabel.setIcon(imageIcon);
+
+						glcanvas.removeGLEventListener(cube);
+						cube = new Cube(im);
+						glcanvas.addGLEventListener(cube);
 					}
 
 				}
@@ -289,7 +404,7 @@ public class MySQLwithJAVA extends JDialog{
 		}
 		modelColumn.setCellEditor(new DefaultCellEditor(comboBox5));
 	}
-	
+
 	public void ResetData() {
 		weapon_list_.clear();
 		bullet_list_.clear();
@@ -578,15 +693,34 @@ public class MySQLwithJAVA extends JDialog{
 		pane6.add(btnNewButton);
 		pane6.add(btnNewButton_1);
 		panel.add(pane6);
-		
-		Panel panel_1 = new Panel();
+
+		JPanel panel_1 = new JPanel();
+		panel_1.setLayout(new GridLayout(2, 2, 0, 0));
 
 		picLabel = new JLabel();
 		panel_1.add(picLabel);
+		final GLProfile profile = GLProfile.get(GLProfile.GL2);
+		GLCapabilities capabilities = new GLCapabilities(profile);
+
+		// The canvas
+		glcanvas = new GLCanvas(capabilities);
+		cube = new Cube();
+		glcanvas.addGLEventListener( cube );
+		glcanvas.setSize( 400, 400 );
+
+
+		getContentPane().add(glcanvas);
+
+		final FPSAnimator animator = new FPSAnimator(glcanvas, 300,true);
+
+		panel_1.add(glcanvas);
+
+		animator.start();
+
 		getContentPane().add(panel_1);
-		
+
 		ResetData();
-		
+
 		TableColumn weaponColumn = table_weapon_.getColumnModel().getColumn(0);
 		JComboBox comboBox = new JComboBox();
 		for(int i = 0 ; i < weapon_list_.size() ; i++) {
@@ -628,15 +762,15 @@ public class MySQLwithJAVA extends JDialog{
 						defaultTableModel_Model2Dpath.addRow(model2d);
 						Object[] model3d = new Object[]{weapon_list_.get(i).model_.model_path_3d_};
 						defaultTableModel_Model3Dpath.addRow(model3d);
-						
-						BufferedImage myPicture;
-						try {
-							myPicture = ImageIO.read(new File(weapon_list_.get(i).model_.model_path_2d_));
-							picLabel.setIcon(new ImageIcon(myPicture));
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+
+						File im = new File(weapon_list_.get(i).model_.model_path_2d_);
+						//myPicture = ImageIO.read(im);
+						ImageIcon imageIcon = new ImageIcon(new ImageIcon(weapon_list_.get(i).model_.model_path_2d_).getImage().getScaledInstance(picLabel.getWidth(), picLabel.getHeight(), Image.SCALE_DEFAULT));
+						picLabel.setIcon(imageIcon);
+
+						glcanvas.removeGLEventListener(cube);
+						cube = new Cube(im);
+						glcanvas.addGLEventListener(cube);
 					}
 
 				}
@@ -678,10 +812,10 @@ public class MySQLwithJAVA extends JDialog{
 		modelColumn.setCellEditor(new DefaultCellEditor(comboBox5));
 
 		btnNewButton_1.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				String weapon = (String)comboBox.getSelectedItem();
 				try {
 					st.executeUpdate("delete from weapon where weaponname = '" + weapon + "';");
@@ -689,17 +823,17 @@ public class MySQLwithJAVA extends JDialog{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 				ResetData();
 				ResetCombobox();
 			}
 		});
-		
+
 		btnNewButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				String weapon = (String)comboBox.getSelectedItem();
 				for(int i = 0 ; i < weapon_list_.size() ; i++) {
 					if((weapon != null) && (weapon.equals(weapon_list_.get(i).weapon_name_))) {
@@ -724,7 +858,7 @@ public class MySQLwithJAVA extends JDialog{
 									+ "where soundname = '" + weapon_list_.get(i).sound_.sound_name_ +"'");
 							res = st.executeUpdate("update model set 2dimagepath = '" + weapon_list_.get(i).model_.model_path_2d_ + "' "
 									+ ", 3Dmodelpath = '" + weapon_list_.get(i).model_.model_path_3d_ + "' where modelname = '" + weapon_list_.get(i).model_.model_name_ +"'");
-						
+
 							defaultTableModelBullet.setRowCount(0);
 							defaultTableModelParticle.setRowCount(0);
 							defaultTableModelSound.setRowCount(0);
